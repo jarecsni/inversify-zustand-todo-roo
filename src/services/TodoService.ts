@@ -1,18 +1,16 @@
 import { injectable, inject } from "inversify";
-import type { Todo, ITodoService, ILoggingService } from "@/types";
+import type { Todo, ITodoService, ILoggingService, ITodoStore } from "@/types";
 import { TYPES } from "@/container/types";
-import { useTodoStore } from "@/store/todoStore";
 
 @injectable()
 export class TodoService implements ITodoService {
-  private unsubscribe: (() => void) | null = null;
-
   constructor(
-    @inject(TYPES.LoggingService) private loggingService: ILoggingService
+    @inject(TYPES.LoggingService) private loggingService: ILoggingService,
+    @inject(TYPES.TodoStore) private todoStore: ITodoStore
   ) {}
 
   getTodos(): Todo[] {
-    return useTodoStore.getState().todos;
+    return this.todoStore.getTodos();
   }
 
   addTodo(text: string): void {
@@ -28,7 +26,7 @@ export class TodoService implements ITodoService {
       createdAt: new Date(),
     };
 
-    useTodoStore.getState().addTodo(newTodo);
+    this.todoStore.addTodo(newTodo);
     this.loggingService.info("Todo added", {
       id: newTodo.id,
       text: newTodo.text,
@@ -44,7 +42,7 @@ export class TodoService implements ITodoService {
       return;
     }
 
-    useTodoStore.getState().toggleTodo(id);
+    this.todoStore.toggleTodo(id);
     this.loggingService.info("Todo toggled", {
       id,
       completed: !todo.completed,
@@ -60,13 +58,11 @@ export class TodoService implements ITodoService {
       return;
     }
 
-    useTodoStore.getState().removeTodo(id);
+    this.todoStore.removeTodo(id);
     this.loggingService.info("Todo removed", { id, text: todo.text });
   }
 
   subscribe(callback: (todos: Todo[]) => void): () => void {
-    return useTodoStore.subscribe((state) => {
-      callback(state.todos);
-    });
+    return this.todoStore.subscribe(callback);
   }
 }

@@ -1,9 +1,10 @@
 import "reflect-metadata";
 import { Container } from "inversify";
-import { ILoggingService, ITodoService } from "@/types";
+import { ILoggingService, ITodoService, ITodoStore } from "@/types";
 import { TYPES } from "@/container/types";
 import { MockLoggingService } from "./MockLoggingService";
 import { MockTodoService } from "./MockTodoService";
+import { MockTodoStore } from "./MockTodoStore";
 
 export const createTestContainer = (): Container => {
   const container = new Container();
@@ -13,6 +14,12 @@ export const createTestContainer = (): Container => {
     .bind<ILoggingService>(TYPES.LoggingService)
     .to(MockLoggingService)
     .inSingletonScope();
+
+  container
+    .bind<ITodoStore>(TYPES.TodoStore)
+    .to(MockTodoStore)
+    .inSingletonScope();
+
   container
     .bind<ITodoService>(TYPES.TodoService)
     .to(MockTodoService)
@@ -29,4 +36,8 @@ export const getMockLoggingService = (
 
 export const getMockTodoService = (container: Container): MockTodoService => {
   return container.get<MockTodoService>(TYPES.TodoService);
+};
+
+export const getMockTodoStore = (container: Container): MockTodoStore => {
+  return container.get<MockTodoStore>(TYPES.TodoStore);
 };

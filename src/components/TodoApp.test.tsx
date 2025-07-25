@@ -6,6 +6,7 @@ import {
   createTestContainer,
   getMockTodoService,
   getMockLoggingService,
+  getMockTodoStore,
 } from "@/test-utils/test-container";
 import { Todo } from "@/types";
 
@@ -26,7 +27,7 @@ describe("TodoApp with IOC", () => {
 
   describe("Dependency Injection Integration", () => {
     it("should use injected mock TodoService", async () => {
-      const mockTodoService = getMockTodoService(testContainer);
+      const mockTodoStore = getMockTodoStore(testContainer);
 
       // Pre-populate with mock data
       const mockTodos: Todo[] = [
@@ -44,7 +45,7 @@ describe("TodoApp with IOC", () => {
         },
       ];
 
-      mockTodoService.setTodos(mockTodos);
+      mockTodoStore.setTodos(mockTodos);
 
       renderWithContainer(<TodoApp />);
 
