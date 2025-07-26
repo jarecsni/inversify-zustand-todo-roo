@@ -1,10 +1,10 @@
 import "reflect-metadata";
 import { Container } from "inversify";
-import { ILoggingService, ITodoService, ITodoStore } from "@/types";
+import { ILoggingService, ITodoService } from "@/types";
 import { TYPES } from "@/container/types";
 import { MockLoggingService } from "./MockLoggingService";
-import { MockTodoService } from "./MockTodoService";
-import { MockTodoStore } from "./MockTodoStore";
+import { TodoService } from "@/services/TodoService";
+import { MockMasterStore } from "./MockMasterStore";
 
 export const createTestContainer = (): Container => {
   const container = new Container();
@@ -16,13 +16,13 @@ export const createTestContainer = (): Container => {
     .inSingletonScope();
 
   container
-    .bind<ITodoStore>(TYPES.TodoStore)
-    .to(MockTodoStore)
+    .bind<MockMasterStore>(TYPES.MasterStore)
+    .to(MockMasterStore)
     .inSingletonScope();
 
   container
     .bind<ITodoService>(TYPES.TodoService)
-    .to(MockTodoService)
+    .to(TodoService)
     .inSingletonScope();
 
   return container;
@@ -34,10 +34,10 @@ export const getMockLoggingService = (
   return container.get<MockLoggingService>(TYPES.LoggingService);
 };
 
-export const getMockTodoService = (container: Container): MockTodoService => {
-  return container.get<MockTodoService>(TYPES.TodoService);
+export const getMockTodoService = (container: Container): ITodoService => {
+  return container.get<ITodoService>(TYPES.TodoService);
 };
 
-export const getMockTodoStore = (container: Container): MockTodoStore => {
-  return container.get<MockTodoStore>(TYPES.TodoStore);
+export const getMockMasterStore = (container: Container): MockMasterStore => {
+  return container.get<MockMasterStore>(TYPES.MasterStore);
 };

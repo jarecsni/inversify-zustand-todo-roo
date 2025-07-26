@@ -1,25 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { ITodoService, Todo } from "@/types";
 import { TYPES } from "@/container";
 import { useService } from "@/hooks/useContainer";
+import { useStoreData } from "@/hooks/useStoreData";
 import { TodoList } from "./TodoList";
 import { AddTodo } from "./AddTodo";
 
 export const TodoApp: React.FC = () => {
   const todoService = useService<ITodoService>(TYPES.TodoService);
-  const [todos, setTodos] = useState<Todo[]>([]);
-
-  useEffect(() => {
-    // Initialize with current todos
-    setTodos(todoService.getTodos());
-
-    // Subscribe to todo changes
-    const unsubscribe = todoService.subscribe((updatedTodos) => {
-      setTodos(updatedTodos);
-    });
-
-    return unsubscribe;
-  }, [todoService]);
+  const todos = useStoreData(todoService, () => todoService.getTodos());
 
   const handleAddTodo = (text: string) => {
     todoService.addTodo(text);

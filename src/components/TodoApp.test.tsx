@@ -6,9 +6,7 @@ import {
   createTestContainer,
   getMockTodoService,
   getMockLoggingService,
-  getMockTodoStore,
 } from "@/test-utils/test-container";
-import { Todo } from "@/types";
 
 describe("TodoApp with IOC", () => {
   let testContainer: ReturnType<typeof createTestContainer>;
@@ -27,32 +25,26 @@ describe("TodoApp with IOC", () => {
 
   describe("Dependency Injection Integration", () => {
     it("should use injected mock TodoService", async () => {
-      const mockTodoStore = getMockTodoStore(testContainer);
+      const mockTodoService = getMockTodoService(testContainer);
 
-      // Pre-populate with mock data
-      const mockTodos: Todo[] = [
-        {
-          id: "1",
-          text: "Mock Todo 1",
-          completed: false,
-          createdAt: new Date(),
-        },
-        {
-          id: "2",
-          text: "Mock Todo 2",
-          completed: true,
-          createdAt: new Date(),
-        },
-      ];
+      // Pre-populate with mock data using the service
+      mockTodoService.addTodo("Mock Todo 1");
+      mockTodoService.addTodo("Mock Todo 2");
 
-      mockTodoStore.setItems(mockTodos);
+      // Toggle the second todo to completed
+      const todos = mockTodoService.getTodos();
+      if (todos.length > 1) {
+        mockTodoService.toggleTodo(todos[1].id);
+      }
 
       renderWithContainer(<TodoApp />);
 
       // Verify mock todos are displayed
-      expect(screen.getByText("Mock Todo 1")).toBeInTheDocument();
-      expect(screen.getByText("Mock Todo 2")).toBeInTheDocument();
-      expect(screen.getByText("1 of 2 completed")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("Mock Todo 1")).toBeInTheDocument();
+        expect(screen.getByText("Mock Todo 2")).toBeInTheDocument();
+        expect(screen.getByText("1 of 2 completed")).toBeInTheDocument();
+      });
     });
 
     it("should add todos through injected service", async () => {

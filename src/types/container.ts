@@ -17,3 +17,17 @@ export interface ITodoService {
 
 // Type alias for Todo store - this enforces type safety at the container level
 export type ITodoStore = IStore<Todo>;
+
+// Theme interfaces
+export interface Theme {
+  name: string;
+  primaryColor: string;
+  backgroundColor: string;
+  textColor: string;
+}
+
+export interface IThemeService {
+  getTheme(): Theme;
+  setTheme(theme: Theme): void;
+  subscribe(callback: (theme: Theme) => void): () => void;
+}
