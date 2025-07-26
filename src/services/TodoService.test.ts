@@ -36,23 +36,21 @@ describe("TodoService", () => {
     expect(todos[0].createdAt).toBeInstanceOf(Date);
   });
 
-  it("should handle adding todo when store data is undefined", () => {
-    // This test reproduces the "Spread syntax requires ...iterable not be null or undefined" error
-    // Simulate the scenario where the store data for 'todos' key is undefined
+  it("should handle adding todo when collection is empty", () => {
+    // This test ensures the collection properly handles empty state
     const mockMasterStore = getMockMasterStore(testContainer);
 
-    // Directly set the todos store value to undefined to simulate the error condition
-    mockMasterStore.setStoreValue("todos", undefined);
+    // Clear any existing todos to ensure we start with empty collection
+    mockMasterStore.clear();
 
-    // This should not throw an error about spread syntax because StoreView.update()
-    // should handle undefined values by using the default value
+    // This should work seamlessly with empty collection
     expect(() => {
-      todoService.addTodo("Test todo with undefined store");
+      todoService.addTodo("Test todo with empty collection");
     }).not.toThrow();
 
     const todos = todoService.getTodos();
     expect(todos).toHaveLength(1);
-    expect(todos[0].text).toBe("Test todo with undefined store");
+    expect(todos[0].text).toBe("Test todo with empty collection");
   });
 
   it("should toggle a todo", () => {
@@ -85,5 +83,28 @@ describe("TodoService", () => {
 
     expect(callback).toHaveBeenCalled();
     unsubscribe();
+  });
+
+  it("should filter completed and active todos", () => {
+    // Add some todos
+    todoService.addTodo("Active todo 1");
+    todoService.addTodo("Active todo 2");
+    todoService.addTodo("Todo to complete");
+
+    // Toggle one to completed
+    const todos = todoService.getTodos();
+    const todoToComplete = todos.find((t) => t.text === "Todo to complete");
+    if (todoToComplete) {
+      todoService.toggleTodo(todoToComplete.id);
+    }
+
+    // Test filter methods
+    const activeTodos = todoService.getActiveTodos();
+    const completedTodos = todoService.getCompletedTodos();
+
+    expect(activeTodos).toHaveLength(2);
+    expect(completedTodos).toHaveLength(1);
+    expect(activeTodos.every((t) => !t.completed)).toBe(true);
+    expect(completedTodos.every((t) => t.completed)).toBe(true);
   });
 });

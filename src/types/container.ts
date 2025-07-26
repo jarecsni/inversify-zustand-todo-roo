@@ -13,6 +13,10 @@ export interface ITodoService {
   toggleTodo(id: string): void;
   removeTodo(id: string): void;
   subscribe(callback: (todos: Todo[]) => void): () => void;
+
+  // Clean filter methods demonstrating collection capabilities
+  getCompletedTodos(): Todo[];
+  getActiveTodos(): Todo[];
 }
 
 // Type alias for Todo store - this enforces type safety at the container level

@@ -1,4 +1,4 @@
-import { Identifiable } from "./Store";
+import { Identifiable } from "@/store/MasterStore";
 
 export interface Todo extends Identifiable {
   text: string;
