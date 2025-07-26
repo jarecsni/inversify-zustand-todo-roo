@@ -45,7 +45,7 @@ describe("TodoApp with IOC", () => {
         },
       ];
 
-      mockTodoStore.setTodos(mockTodos);
+      mockTodoStore.setItems(mockTodos);
 
       renderWithContainer(<TodoApp />);
 

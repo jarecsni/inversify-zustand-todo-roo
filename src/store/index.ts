@@ -1,2 +1,1 @@
-export * from "./todoStore";
-export * from "./ZustandTodoStore";
+export * from "./Store";

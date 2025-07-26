@@ -3,37 +3,41 @@ import { Todo, ITodoStore } from "@/types";
 
 @injectable()
 export class MockTodoStore implements ITodoStore {
-  private todos: Todo[] = [];
-  private subscribers: Array<(todos: Todo[]) => void> = [];
+  private items: Todo[] = [];
+  private subscribers: Array<(items: Todo[]) => void> = [];
 
-  getTodos(): Todo[] {
-    return [...this.todos];
+  getItems(): Todo[] {
+    return [...this.items];
   }
 
-  addTodo(todo: Todo): void {
-    this.todos.push(todo);
+  addItem(item: Todo): void {
+    this.items.push(item);
     this.notifySubscribers();
   }
 
-  toggleTodo(id: string): void {
-    const todo = this.todos.find((t) => t.id === id);
-    if (todo) {
-      todo.completed = !todo.completed;
+  updateItem(id: string, updater: (item: Todo) => Todo): void {
+    const index = this.items.findIndex((item) => item.id === id);
+    if (index !== -1) {
+      this.items[index] = updater(this.items[index]);
       this.notifySubscribers();
     }
   }
 
-  removeTodo(id: string): void {
-    this.todos = this.todos.filter((t) => t.id !== id);
+  removeItem(id: string): void {
+    this.items = this.items.filter((item) => item.id !== id);
     this.notifySubscribers();
   }
 
-  setTodos(todos: Todo[]): void {
-    this.todos = [...todos];
+  setItems(items: Todo[]): void {
+    this.items = [...items];
     this.notifySubscribers();
   }
 
-  subscribe(callback: (todos: Todo[]) => void): () => void {
+  findItem(predicate: (item: Todo) => boolean): Todo | undefined {
+    return this.items.find(predicate);
+  }
+
+  subscribe(callback: (items: Todo[]) => void): () => void {
     this.subscribers.push(callback);
     return () => {
       this.subscribers = this.subscribers.filter((sub) => sub !== callback);
@@ -42,11 +46,11 @@ export class MockTodoStore implements ITodoStore {
 
   // Test helper methods
   clear(): void {
-    this.todos = [];
+    this.items = [];
     this.notifySubscribers();
   }
 
   private notifySubscribers(): void {
-    this.subscribers.forEach((callback) => callback([...this.todos]));
+    this.subscribers.forEach((callback) => callback([...this.items]));
   }
 }

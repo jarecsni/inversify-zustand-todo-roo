@@ -1,9 +1,9 @@
 import "reflect-metadata";
 import { Container } from "inversify";
-import { ILoggingService, ITodoService, ITodoStore } from "@/types";
+import { ILoggingService, ITodoService, ITodoStore, Todo } from "@/types";
 import { LoggingService } from "@/services/LoggingService";
 import { TodoService } from "@/services/TodoService";
-import { ZustandTodoStore } from "@/store/ZustandTodoStore";
+import { Store } from "@/store/Store";
 import { TYPES } from "./types";
 
 const container = new Container();
@@ -16,7 +16,7 @@ container
 
 container
   .bind<ITodoStore>(TYPES.TodoStore)
-  .to(ZustandTodoStore)
+  .to(Store<Todo>)
   .inSingletonScope();
 
 container

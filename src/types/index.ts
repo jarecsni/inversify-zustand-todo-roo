@@ -1,3 +1,3 @@
 export * from "./Todo";
-export * from "./TodoStore";
+export * from "./Store";
 export * from "./container";

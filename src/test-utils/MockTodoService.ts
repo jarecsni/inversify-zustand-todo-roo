@@ -10,7 +10,7 @@ export class MockTodoService implements ITodoService {
   ) {}
 
   getTodos(): Todo[] {
-    return this.todoStore.getTodos();
+    return this.todoStore.getItems();
   }
 
   addTodo(text: string): void {
@@ -26,7 +26,7 @@ export class MockTodoService implements ITodoService {
       createdAt: new Date(),
     };
 
-    this.todoStore.addTodo(newTodo);
+    this.todoStore.addItem(newTodo);
     this.loggingService.info("Todo added", {
       id: newTodo.id,
       text: newTodo.text,
@@ -34,15 +34,19 @@ export class MockTodoService implements ITodoService {
   }
 
   toggleTodo(id: string): void {
-    const todos = this.getTodos();
-    const todo = todos.find((t) => t.id === id);
+    const todo = this.todoStore.findItem((t) => t.id === id);
 
     if (!todo) {
       this.loggingService.warn("Todo not found for toggle", { id });
       return;
     }
 
-    this.todoStore.toggleTodo(id);
+    // Business logic: toggle the completed status
+    this.todoStore.updateItem(id, (item) => ({
+      ...item,
+      completed: !item.completed,
+    }));
+
     this.loggingService.info("Todo toggled", {
       id,
       completed: !todo.completed,
@@ -50,15 +54,14 @@ export class MockTodoService implements ITodoService {
   }
 
   removeTodo(id: string): void {
-    const todos = this.getTodos();
-    const todo = todos.find((t) => t.id === id);
+    const todo = this.todoStore.findItem((t) => t.id === id);
 
     if (!todo) {
       this.loggingService.warn("Todo not found for removal", { id });
       return;
     }
 
-    this.todoStore.removeTodo(id);
+    this.todoStore.removeItem(id);
     this.loggingService.info("Todo removed", { id, text: todo.text });
   }
 
